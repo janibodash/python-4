@@ -1,8 +1,7 @@
-#4-5-6
-
 import os
 import csv
 import json
+
 
 class FileManager:
     def __init__(self, filename):
@@ -28,7 +27,6 @@ class FileManager:
             print("Output folder already exists:", folder)
 
 
-
 class DataLoader:
     def __init__(self, filename):
         self.filename = filename
@@ -44,9 +42,11 @@ class DataLoader:
                     self.students.append(row)
 
             print("Data loaded successfully:", len(self.students), "students")
+            return self.students
 
         except FileNotFoundError:
             print("Error: file not found")
+            return []
 
     def preview(self, n=5):
         print("\nFirst", n, "rows:")
@@ -74,14 +74,33 @@ class DataAnalyser:
             else:
                 country_counts[country] = 1
 
+        
         top_3 = sorted(country_counts.items(), key=lambda x: x[1], reverse=True)[:3]
 
+        
+        top_3_formatted = [
+            {"country": c, "count": n}
+            for c, n in top_3
+        ]
+
+       
+        high_gpa_students = list(filter(lambda s: float(s["GPA"]) > 3.5, self.students))
+
+        
+        gpa_values = list(map(lambda s: float(s["GPA"]), self.students))
+
+        print("\nStudents with GPA > 3.5:", len(high_gpa_students))
+        print("First 5 GPA values:", gpa_values[:5])
+
         self.result = {
+            "analysis": "Country Analysis",
             "total_students": len(self.students),
             "total_countries": len(country_counts),
-            "top_3": top_3,
+            "top_3_countries": top_3_formatted,
             "all_countries": country_counts
         }
+
+        return self.result
 
     def print_results(self):
         print("\nCountry Analysis")
@@ -90,8 +109,8 @@ class DataAnalyser:
         print("Total countries:", self.result["total_countries"])
 
         print("\nTop 3 Countries:")
-        for i, (c, n) in enumerate(self.result["top_3"], 1):
-            print(f"{i}. {c}: {n}")
+        for i, item in enumerate(self.result["top_3_countries"], 1):
+            print(f"{i}. {item['country']} : {item['count']}")
 
         print("-" * 30)
 
@@ -110,4 +129,3 @@ class ResultSaver:
 
         except Exception:
             print("Error saving file")
-

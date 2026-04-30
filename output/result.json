@@ -1,19 +1,20 @@
 {
+    "analysis": "Country Analysis",
     "total_students": 10000,
     "total_countries": 13,
-    "top_3": [
-        [
-            "Canada",
-            792
-        ],
-        [
-            "India",
-            792
-        ],
-        [
-            "Bangladesh",
-            789
-        ]
+    "top_3_countries": [
+        {
+            "country": "Canada",
+            "count": 792
+        },
+        {
+            "country": "India",
+            "count": 792
+        },
+        {
+            "country": "Bangladesh",
+            "count": 789
+        }
     ],
     "all_countries": {
         "Germany": 742,
