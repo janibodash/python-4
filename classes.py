@@ -60,59 +60,74 @@ class DataLoader:
 
 class DataAnalyser:
     def __init__(self, students):
+        # Сохраняем данные и готовим место под результат 
         self.students = students
         self.result = {}
 
     def analyse(self):
-        country_counts = {}
-
-        for s in self.students:
-            country = s["country"]
-
-            if country in country_counts:
-                country_counts[country] += 1
-            else:
-                country_counts[country] = 1
-
-        
-        top_3 = sorted(country_counts.items(), key=lambda x: x[1], reverse=True)[:3]
-
-        
-        top_3_formatted = [
-            {"country": c, "count": n}
-            for c, n in top_3
-        ]
-
-       
-        high_gpa_students = list(filter(lambda s: float(s["GPA"]) > 3.5, self.students))
-
-        
-        gpa_values = list(map(lambda s: float(s["GPA"]), self.students))
-
-        print("\nStudents with GPA > 3.5:", len(high_gpa_students))
-        print("First 5 GPA values:", gpa_values[:5])
-
-        self.result = {
-            "analysis": "Country Analysis",
-            "total_students": len(self.students),
-            "total_countries": len(country_counts),
-            "top_3_countries": top_3_formatted,
-            "all_countries": country_counts
-        }
-
-        return self.result
+        # Базовый класс не делает расчетов сам 
+        print("Not implemented - use a child class")
 
     def print_results(self):
-        print("\nCountry Analysis")
-        print("-" * 30)
-        print("Total students:", self.result["total_students"])
-        print("Total countries:", self.result["total_countries"])
+        # Просто выводим всё, что накопилось в словаре результатов 
+        for key, value in self.result.items():
+            print(f"{key}: {value}")
 
-        print("\nTop 3 Countries:")
-        for i, item in enumerate(self.result["top_3_countries"], 1):
-            print(f"{i}. {item['country']} : {item['count']}")
+    def __str__(self):
+        # Красивое описание объекта 
+        return f"DataAnalyser: base class, {len(self.students)} students"
+    
 
-        print("-" * 30)
+# Task 2: Дочерний класс для Варианта B
+class CountryAnalyser(DataAnalyser):
+    def __init__(self, students):
+        # Вызываем конструктор родителя [cite: 52]
+        super().__init__(students)
+
+    def analyse(self):
+        # Логика анализа из Практики 5 [cite: 54]
+        counts = {}
+        for s in self.students:
+            country = s.get("country", "Unknown")
+            counts[country] = counts.get(country, 0) + 1
+        
+        # Сортируем топ-3 для примера [cite: 158]
+        top_3 = sorted(counts.items(), key=lambda x: x[1], reverse=True)[:3]
+        
+        # Сохраняем в self.result [cite: 55]
+        self.result = {
+            "total_students": len(self.students),
+            "total_countries": len(counts),
+            "top_3": top_3
+        }
+
+    # Task 3: Переопределение вывода [cite: 77]
+    def print_results(self):
+        print("\nCOUNTRY ANALYSIS REPORT") # Заголовок [cite: 78]
+        print("============")
+        super().print_results()             # Вызов родительского метода [cite: 79]
+        print("=============")            # Футер [cite: 80]
+
+    def __str__(self):
+        # Описание для Task 2 [cite: 57]
+        return f"CountryAnalyser: Country Analysis, {len(self.students)} students"
+
+
+# Task 4: Association
+class Report:
+    def __init__(self, analyser, saver):
+        # Сохраняем ссылки на объекты (Ассоциация)
+        self.analyser = analyser  # USES-A DataAnalyser
+        self.saver = saver        # USES-A ResultSaver
+
+    def generate(self):
+        print("\nGenerating report...")
+        # Менеджер отдает команды объектам
+        self.analyser.analyse()
+        self.analyser.print_results()
+        self.saver.save_json()
+        print("Report complete.")
+
 
 
 class ResultSaver:
